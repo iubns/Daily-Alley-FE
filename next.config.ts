@@ -1,7 +1,25 @@
-import type { NextConfig } from "next";
+const path = require("path")
 
-const nextConfig: NextConfig = {
-  /* config options here */
-};
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  output: "export",
+  trailingSlash: true,
+  images: {
+    unoptimized: true,
+  },
 
-export default nextConfig;
+  compiler: {
+    styledComponents: true,
+  },
+
+  webpack: (config: any) => {
+    config.resolve.alias["@/"] = path.resolve(__dirname, "src")
+    config.resolve.alias["@/components"] = path.resolve(
+      __dirname,
+      "src/components"
+    )
+    return config
+  },
+}
+
+module.exports = nextConfig
