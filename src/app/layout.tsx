@@ -1,14 +1,8 @@
-/*
-유진_08.13: 
-1. ThemeRegistry import 추가, Metadata와 언어(ko) 변경
-2. 하단 네비게이션바(MainBottomNav) 제작 내용 추가
-*/
-
-import "./globals.css"
-import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
-import ThemeRegistry from "./theme/ThemeRegistry"
-import MainBottomNav from "./components/MainBottomNav"
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import "./globals.css";
+import ThemeRegistry from './theme/ThemeRegistry';
+import MainBottomNav from './components/MainBottomNav'; 
 import { Stack } from "@mui/material"
 
 const geistSans = Geist({
