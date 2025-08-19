@@ -11,35 +11,37 @@ import { useRouter, usePathname } from "next/navigation"
 
 enum NavMenu {
   Schedule, // 0
-  Create,   // 1
-  Home,     // 2
-  Info,     // 3
-  User      // 4
+  Create, // 1
+  Home, // 2
+  Info, // 3
+  User, // 4
 }
 
 const valueToPath: { [key in NavMenu]: string } = {
-  [NavMenu.Schedule]: '/schedule',
-  [NavMenu.Create]:   '/create',
-  [NavMenu.Home]:     '/',
-  [NavMenu.Info]:     '/info',
-  [NavMenu.User]:     '/user'
-};
+  [NavMenu.Schedule]: "/schedule",
+  [NavMenu.Create]: "/create",
+  [NavMenu.Home]: "/",
+  [NavMenu.Info]: "/info",
+  [NavMenu.User]: "/user",
+}
 
 function MainBottomNav() {
-  const router = useRouter();
-  const pathname = usePathname();
-  // 초기값을 NavMenu.Home으로 설정
-  const [value, setValue] = useState<NavMenu>(NavMenu.Home);
+  const router = useRouter()
+  const pathname = usePathname()
+  // 초기값을 undefined로 설정하여 아무것도 선택되지 않은 상태로 시작
+  const [value, setValue] = useState<NavMenu | undefined>(undefined)
 
   useEffect(() => {
-    const matchingKey = Object.keys(valueToPath).find(key => 
-      valueToPath[Number(key) as NavMenu] === pathname
-    );
+    const matchingKey = Object.keys(valueToPath).find(
+      (key) => valueToPath[Number(key) as NavMenu] === pathname
+    )
     if (matchingKey) {
-      setValue(Number(matchingKey) as NavMenu);
+      setValue(Number(matchingKey) as NavMenu)
+    } else {
+      // 매칭되는 경로가 없으면 아무것도 선택하지 않음
+      setValue(undefined)
     }
-  }, [pathname]);
-
+  }, [pathname])
 
   return (
     <Paper sx={{ zIndex: 1000 }} elevation={3}>
@@ -48,10 +50,35 @@ function MainBottomNav() {
         showLabels
         value={value}
         onChange={(event, newValue: NavMenu) => {
-          const path = valueToPath[newValue];
+          const path = valueToPath[newValue]
           if (path) {
             router.push(path)
           }
+        }}
+        sx={{
+          "& .MuiBottomNavigationAction-root": {
+            color: "#757575",
+            transition: "all 0.3s ease",
+            "&.Mui-selected": {
+              color: "#556cd6",
+              "& .MuiBottomNavigationAction-label": {
+                fontSize: "0.75rem",
+                fontWeight: "600",
+              },
+              "& .MuiSvgIcon-root": {
+                fontSize: "1.5rem",
+                transform: "scale(1.1)",
+              },
+            },
+            "&:hover": {
+              color: "#556cd6",
+              backgroundColor: "rgba(85, 108, 214, 0.04)",
+            },
+          },
+          "& .MuiBottomNavigationAction-label": {
+            fontSize: "0.7rem",
+            fontWeight: "500",
+          },
         }}
       >
         <BottomNavigationAction label="일정 정리" icon={<EditCalendarIcon />} />
