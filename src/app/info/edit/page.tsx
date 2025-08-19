@@ -4,8 +4,14 @@ import { Box, Button, Stack } from "@mui/material"
 import styles from "./page.module.css"
 import ArrowBackIcon from "@mui/icons-material/ArrowBack"
 import { useEffect, useState } from "react"
+import SecondInfoPage from "./SecondPage"
+import FirstInfoPage from "./FirstPage"
+import ThirdInfoPage from "./ThirdPage"
+import FourthInfoPage from "./FourthInfoPage"
+import { useRouter } from "next/navigation"
 
 export default function InfoEditPage() {
+  const { push } = useRouter()
   const [progress, setProgress] = useState(25)
   const [currentStep, setCurrentStep] = useState(1)
 
@@ -19,18 +25,48 @@ export default function InfoEditPage() {
     if (currentStep < 4) {
       setCurrentStep(currentStep + 1)
     }
+    if (currentStep === 4) {
+      push("/info")
+    }
+  }
+
+  function StepPage() {
+    switch (currentStep) {
+      case 1:
+        return <FirstInfoPage />
+      case 2:
+        return <SecondInfoPage />
+      case 3:
+        return <ThirdInfoPage />
+      case 4:
+        return <FourthInfoPage />
+      default:
+        return null
+    }
+  }
+
+  function handleBack() {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1)
+      setProgress((currentStep - 1) * 25)
+    }
+
+    if (currentStep === 1) {
+      push("/info")
+    }
   }
 
   return (
     <Stack height="100vh" width="100%">
       <Stack
-        padding="12px"
+        p="12px"
+        py="24px"
         direction="row"
         gap="12px"
         alignItems="center"
         marginRight="24px"
       >
-        <ArrowBackIcon />
+        <ArrowBackIcon onClick={handleBack} />
         <Stack
           position="relative"
           width="100%"
@@ -52,7 +88,9 @@ export default function InfoEditPage() {
           />
         </Stack>
       </Stack>
-      <Stack display="flex" flex="1"></Stack>
+      <Stack display="flex" flex="1">
+        <StepPage />
+      </Stack>
       <Stack padding="12px">
         <Button
           variant="contained"
