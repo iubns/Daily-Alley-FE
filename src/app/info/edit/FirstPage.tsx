@@ -8,10 +8,19 @@ import {
   Stack,
   TextField,
 } from "@mui/material"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import useStoreEdit from "./useStoreEdit"
 
 export default function FirstInfoPage() {
   const [category, setCategory] = useState("")
+  const { storeInfo, setStoreInfo } = useStoreEdit()
+
+  useEffect(() => {
+    setStoreInfo({
+      ...storeInfo,
+      type: category,
+    })
+  }, [category])
 
   return (
     <Stack width="100%" height="100%" alignItems="center">
@@ -35,6 +44,13 @@ export default function FirstInfoPage() {
           label="가게 위치"
           fullWidth
           size="small"
+          onChange={(e) => {
+            setStoreInfo({
+              ...storeInfo,
+              location: e.target.value,
+            })
+          }}
+          value={storeInfo.location}
           placeholder="예시: 서울시 강남구 역삼동 123-45"
         />
         <TextField
@@ -42,7 +58,14 @@ export default function FirstInfoPage() {
           fullWidth
           multiline
           rows={4}
+          onChange={(e) => {
+            setStoreInfo({
+              ...storeInfo,
+              description: e.target.value,
+            })
+          }}
           size="small"
+          value={storeInfo.description}
           placeholder="예시: 02-123-4567"
         />
       </Stack>

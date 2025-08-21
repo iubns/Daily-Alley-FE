@@ -9,11 +9,16 @@ import FirstInfoPage from "./FirstPage"
 import ThirdInfoPage from "./ThirdPage"
 import FourthInfoPage from "./FourthInfoPage"
 import { useRouter } from "next/navigation"
+import useStoreEdit, { StoreInfo } from "./useStoreEdit"
+import { useAtom, useAtomValue } from "jotai"
+import { StoreIdAtom } from "@/app/atom/storeId"
 
 export default function InfoEditPage() {
   const { push } = useRouter()
   const [progress, setProgress] = useState(25)
   const [currentStep, setCurrentStep] = useState(1)
+  const { registrationStoreInfo } = useStoreEdit()
+  const storeId = useAtomValue(StoreIdAtom)
 
   useEffect(() => {
     const steps = 4
@@ -21,11 +26,19 @@ export default function InfoEditPage() {
     setProgress(newProgress)
   }, [currentStep])
 
-  function handleNextStep() {
+  async function handleNextStep() {
     if (currentStep < 4) {
       setCurrentStep(currentStep + 1)
     }
     if (currentStep === 4) {
+      const { status } = await registrationStoreInfo()
+      //Todo: 나중에 이쁘게 꾸미기
+      if (status === 200) {
+        alert("가게 정보가 성공적으로 등록되었습니다.")
+      } else {
+        alert("가게 정보 등록에 실패했습니다. 다시 시도해주세요.")
+      }
+
       push("/info")
     }
   }
