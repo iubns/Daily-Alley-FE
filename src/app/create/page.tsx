@@ -10,6 +10,7 @@ function CreateContentPage() {
   const [contentType, setContentType] = useState('story'); // 업로드 종류
   const [mood, setMood] = useState('calm'); // 오늘의 느낌
   const [info, setInfo] = useState(''); // 오늘의 정보
+    const [directContent, setDirectContent] = useState(''); // 내용 직접 입력
   const [hashtags, setHashtags] = useState<string[]>(['#해시태그']); // chip 해시태그 배열 관리
   const [userTags, setUserTags] = useState<string[]>(['@someone_']); // chip 유저태그 배열 관리
   const [currentHashtag, setCurrentHashtag] = useState(''); // 해시태그 현재 입력값 저장
@@ -61,6 +62,7 @@ function CreateContentPage() {
                 >
                   <MenuItem value="story">스토리</MenuItem>
                   <MenuItem value="feed">피드</MenuItem>
+                  <MenuItem value="blog">블로그</MenuItem>
                 </Select>
               </FormControl>
               {/* 제작 버튼 */}
@@ -98,6 +100,21 @@ function CreateContentPage() {
               />
             </Box>
 
+            {/* '피드'가 선택되었을 때, '내용 직접 입력' 창 보이기*/}
+            {contentType === 'feed' && (
+              <Box>
+                <Typography variant="body1" fontWeight="bold" sx={{ mb: 1 }}>내용 직접 입력</Typography>
+                <TextField
+                  multiline
+                  rows={6} // 다른 입력창보다 조금 더 길게 설정
+                  value={directContent}
+                  onChange={(e) => setDirectContent(e.target.value)}
+                  placeholder="피드에 들어갈 내용을 직접 입력해주세요."
+                  fullWidth
+                />
+              </Box>
+            )}
+
             {/* 사진 추가 */}
             <Box>
               <Typography variant="body1" fontWeight="bold" sx={{ mb: 1 }}>사진 추가</Typography>
@@ -122,9 +139,11 @@ function CreateContentPage() {
             </Box>
 
             {/* 해시태그 */}
-            <Box>
-              <Typography variant="body1" fontWeight="bold" sx={{ mb: 1 }}>해시태그 입력</Typography>
-              {/* 추가된 태그들을 Chip으로 보여주는 영역 */}
+            {contentType !== 'blog' && (
+              <>
+                <Box>
+                  <Typography variant="body1" fontWeight="bold" sx={{ mb: 1 }}>해시태그 입력</Typography>
+                  {/* 추가된 태그들을 Chip으로 보여주는 영역 */}
               <Stack direction="row" spacing={1} sx={{ mb: 1, flexWrap: 'wrap', gap: 1 }}>
                 {hashtags.map((tag) => (
                   <Chip key={tag} label={tag} onDelete={() => handleHashtagDelete(tag)} />
@@ -162,7 +181,8 @@ function CreateContentPage() {
                 placeholder="유저 입력 후 엔터키로 업로드"
               />
             </Box>
-
+            </>
+            )}
           </Stack>
         </Paper>
       </Box>
