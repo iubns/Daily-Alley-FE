@@ -8,8 +8,8 @@ export default function ThirdInfoPage() {
       <Stack textAlign="center">3. 사용 중인 SNS를 등록해주세요.</Stack>
 
       <Stack gap="24px" width="100%" maxWidth="400px" mt="24px" padding="12px">
-        <TextField label="인스타그램 아이디" />
-        <TextField label="인스타그램 비밀번호" type="password" />
+        <TextField label="네이버 블로그 아이디" />
+        <TextField label="네이버 블로그 비밀번호" type="password" />
       </Stack>
     </Stack>
   )

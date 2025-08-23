@@ -1,8 +1,8 @@
-import { atom, useAtom, useAtomValue } from "jotai"
-import { StoreIdAtom } from "../atom/storeId"
 import axios from "@/config/axios"
-import { StoreInfo } from "./edit/useStoreEdit"
+import { atom, useAtom } from "jotai"
 import { useRouter } from "next/navigation"
+import { StoreIdAtom } from "../atom/storeId"
+import { StoreInfo } from "./edit/useStoreEdit"
 
 const StoreInfoAtom = atom<StoreInfo>({
   name: "",
@@ -12,9 +12,9 @@ const StoreInfoAtom = atom<StoreInfo>({
 })
 
 export function useInfo() {
+  const { push } = useRouter()
   const [storeId, setStoreId] = useAtom(StoreIdAtom)
   const [storeInfo, setStoreInfo] = useAtom(StoreInfoAtom)
-  const { push } = useRouter()
 
   async function fetchStoreInfo() {
     if (!storeId) {

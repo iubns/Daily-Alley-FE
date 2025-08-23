@@ -23,6 +23,7 @@ interface RegistrationResponse {
 export default function useStoreEdit() {
   const [storeInfo, setStoreInfo] = useAtom(StoreInfoAtom)
   const setStoreId = useSetAtom(atom<number | null>(null))
+
   async function registrationStoreInfo() {
     const { data, status } = await axios.post<RegistrationResponse>(
       "/store",
