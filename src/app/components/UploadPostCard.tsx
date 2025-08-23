@@ -21,7 +21,7 @@ function UploadPostCard() {
     <Box sx={{ p: 2 }}>
       
       <Typography variant="h6" gutterBottom fontWeight="bold">
-        피드 내용
+        오늘의 업로드 내용!
       </Typography>
 
       {/* 이미지 카드 */}
