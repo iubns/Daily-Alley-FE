@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { useEffect } from "react"
 import {
   Box,
   Container,
@@ -11,6 +11,7 @@ import {
 } from "@mui/material"
 import UserProfileHeader from "../components/UserProfileHeader"
 import { useRouter } from "next/navigation"
+import { useInfo } from "./useInfo"
 
 // 임시 데이터
 const mockStoreData = {
@@ -23,10 +24,15 @@ const mockStoreData = {
 
 function StoreInfoPage() {
   const { push } = useRouter()
+  const { storeInfo, fetchStoreInfo } = useInfo()
 
   function handleEditClick() {
     push("/info/edit")
   }
+
+  useEffect(() => {
+    fetchStoreInfo()
+  }, [fetchStoreInfo])
 
   return (
     <Container maxWidth="sm" sx={{ p: 0, pb: 7 }}>
@@ -78,7 +84,7 @@ function StoreInfoPage() {
 
         {/* 가게 설명 내용 */}
         <Typography variant="body1" sx={{ whiteSpace: "pre-wrap" }}>
-          {mockStoreData.description}
+          {storeInfo.description}
         </Typography>
       </Box>
     </Container>
