@@ -22,7 +22,7 @@ export function useInfo() {
       if (storedId) {
         setStoreId(Number(storedId))
       } else {
-        push("/info/edit")
+        //push("/info/edit")
         return
       }
     }

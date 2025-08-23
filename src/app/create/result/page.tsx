@@ -4,9 +4,9 @@ import React, { useEffect, useState } from 'react';
 import { 
   Box, Container, Typography, Button, Divider, Paper, 
   Stack, Chip, IconButton, Modal, TextField} from '@mui/material';
-import UserProfileHeader from '../components/UserProfileHeader';
+import UserProfileHeader from '../../components/UserProfileHeader';
 import { useAtom } from 'jotai';
-import { creationResultAtom } from './atom/creationAtom';
+import { creationResultAtom } from '../atom/creationAtom';
 import { useRouter } from 'next/navigation';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'; 
 
