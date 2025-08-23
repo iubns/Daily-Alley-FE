@@ -16,10 +16,7 @@ export default function FirstInfoPage() {
   const { storeInfo, setStoreInfo } = useStoreEdit()
 
   useEffect(() => {
-    setStoreInfo({
-      ...storeInfo,
-      type: category,
-    })
+    console.log(storeInfo)
   }, [category])
 
   return (

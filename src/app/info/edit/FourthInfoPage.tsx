@@ -20,14 +20,14 @@ export default function FourthInfoPage() {
             textAlign: "left",
           }}
         >
-          인스타그램 스토리
+          사진 느낌
         </Typography>
         <Stack direction="row" width="100%" overflow="scroll" gap="12px">
           {Array.from({ length: 5 }).map((_, index) => (
             <Stack
               key={index}
-              minWidth="100px"
-              height="200px"
+              minWidth="200px"
+              height="140px"
               bgcolor="#f0f0f0"
               borderRadius="8px"
               display="flex"
@@ -52,14 +52,14 @@ export default function FourthInfoPage() {
             mt: 2,
           }}
         >
-          인스타그램 피드
+          게시글 느낌
         </Typography>
-        <Stack direction="row" width="100%" overflow="scroll" gap="12px">
+        <Stack width="100%" overflow="scroll" gap="12px">
           {Array.from({ length: 5 }).map((_, index) => (
             <Stack
               key={index}
-              minWidth="200px"
-              height="140px"
+              minWidth="100px"
+              height="200px"
               bgcolor="#f0f0f0"
               borderRadius="8px"
               display="flex"

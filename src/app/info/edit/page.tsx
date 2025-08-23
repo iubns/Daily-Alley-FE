@@ -9,8 +9,8 @@ import FirstInfoPage from "./FirstPage"
 import ThirdInfoPage from "./ThirdPage"
 import FourthInfoPage from "./FourthInfoPage"
 import { useRouter } from "next/navigation"
-import useStoreEdit, { StoreInfo } from "./useStoreEdit"
-import { useAtom, useAtomValue } from "jotai"
+import useStoreEdit from "./useStoreEdit"
+import { useAtomValue } from "jotai"
 import { StoreIdAtom } from "@/app/atom/storeId"
 
 export default function InfoEditPage() {
