@@ -10,7 +10,6 @@ export default function Home() {
       <Box>
         <UserProfileHeader />
         <Divider />
-        <UploadHistory /> 
         <UploadPostCard />
       </Box>
     </Container>
