@@ -12,12 +12,33 @@ const StoreInfoAtom = atom<StoreInfo>({
   description: "",
 })
 
+// contentFeel atom을 파일 최상단에 선언
+export const ContentFeelAtom = atom<{ picFeel: string; postFeel: string }>({
+  picFeel: "",
+  postFeel: "",
+})
+
 export function useInfo() {
   const { push } = useRouter()
   const [storeId, setStoreId] = useAtom(StoreIdAtom)
   const [storeInfo, setStoreInfo] = useAtom(StoreInfoAtom)
-  const [contentFeel, setContentFeel] = useAtom(
-    atom<{ picFeel: string; postFeel: string }>({ picFeel: "", postFeel: "" })
+  const [contentFeel, setContentFeel] = useAtom(ContentFeelAtom)
+
+  // storeId가 바뀔 때만 fetchContentFeel 실행
+  const fetchContentFeel = useCallback(
+    async (id?: number | string) => {
+      const targetId = id || storeId || localStorage.getItem("storeId")
+      if (!targetId) return
+      try {
+        const { data, status } = await axios.get(
+          `/contents?storeId=${targetId}`
+        )
+        if (status === 200) setContentFeel(data)
+      } catch (e) {
+        // 에러 처리
+      }
+    },
+    [storeId, setContentFeel]
   )
 
   async function fetchStoreInfo() {
