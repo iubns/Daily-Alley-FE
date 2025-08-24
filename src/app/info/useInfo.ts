@@ -3,7 +3,6 @@ import { atom, useAtom } from "jotai"
 import { useRouter } from "next/navigation"
 import { StoreIdAtom } from "../atom/storeId"
 import { StoreInfo } from "./edit/useStoreEdit"
-//
 import { useEffect } from 'react';
 
 const StoreInfoAtom = atom<StoreInfo>({
@@ -25,7 +24,7 @@ export function useInfo() {
     if (!storeId) {
       foundStoreId = localStorage.getItem("storeId")
       if (!foundStoreId) {
-        // push("/info/edit")
+        push("/info/edit")
         return
       }
       setStoreId(Number(foundStoreId))

@@ -123,7 +123,7 @@ function CreateResultPage() {
 
         {/* AI 생성 해시태그 */}
         <Stack direction="row" spacing={1} sx={{ mb: 2, flexWrap: 'wrap', gap: 1 }}>
-          {creationResult.hashtags.map((tag) => (
+          {creationResult && creationResult.hashtags && creationResult.hashtags.map((tag) => (
             <Chip key={tag} label={tag} onDelete={() => handleHashtagDelete(tag)} />
           ))}
         </Stack>
