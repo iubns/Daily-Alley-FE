@@ -9,6 +9,19 @@ const StoreInfoAtom = atom<StoreInfo>({
   description: "",
 })
 
+// 컨텐츠 느낌 저장용 atom
+const ContentFeelAtom = atom<ContentFeel>({
+  storeId: 0,
+  picFeel: "",
+  postFeel: "",
+})
+
+export interface ContentFeel {
+  storeId: number
+  picFeel: string
+  postFeel: string
+}
+
 const StoreSnsInfoAtom = atom<StoreSNSInfo>({
   storeId: 0,
   snsId: "",
@@ -38,7 +51,12 @@ interface StoreSNSInfo {
 export default function useStoreEdit() {
   const [storeInfo, setStoreInfo] = useAtom(StoreInfoAtom)
   const [storeSnsInfo, setStoreSnsInfo] = useAtom(StoreSnsInfoAtom)
+  const [contentFeel, setContentFeel] = useAtom(ContentFeelAtom)
   const setStoreId = useSetAtom(atom<number | null>(null))
+  async function saveContentFeel() {
+    const { status } = await axios.post("/contents", contentFeel)
+    return status
+  }
 
   async function registrationStoreInfo() {
     const { data, status } = await axios.post<RegistrationResponse>(
@@ -69,5 +87,8 @@ export default function useStoreEdit() {
     setStoreInfo,
     setStoreSnsInfo,
     storeSnsInfo,
+    contentFeel,
+    setContentFeel,
+    saveContentFeel,
   }
 }

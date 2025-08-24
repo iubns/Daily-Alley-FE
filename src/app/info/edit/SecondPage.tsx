@@ -112,23 +112,25 @@ function ImageUploadBox({
 }
 
 export default function SecondInfoPage() {
-  const [image1, setImage1] = useState<string>("")
-  const [image2, setImage2] = useState<string>("")
-  const [image3, setImage3] = useState<string>("")
+  const [insideImages, setInsideImages] = useState<string[]>(["", "", ""])
+  const [outsideImages, setOutsideImages] = useState<string[]>(["", "", ""])
 
-  const handleImage1Select = (file: File) => {
+  const handleInsideImageSelect = (file: File, index: number) => {
     const imageUrl = URL.createObjectURL(file)
-    setImage1(imageUrl)
+    setInsideImages((prev) => {
+      const newArr = [...prev]
+      newArr[index] = imageUrl
+      return newArr
+    })
   }
 
-  const handleImage2Select = (file: File) => {
+  const handleOutsideImageSelect = (file: File, index: number) => {
     const imageUrl = URL.createObjectURL(file)
-    setImage2(imageUrl)
-  }
-
-  const handleImage3Select = (file: File) => {
-    const imageUrl = URL.createObjectURL(file)
-    setImage3(imageUrl)
+    setOutsideImages((prev) => {
+      const newArr = [...prev]
+      newArr[index] = imageUrl
+      return newArr
+    })
   }
 
   return (
@@ -158,21 +160,14 @@ export default function SecondInfoPage() {
       </Typography>
 
       <Stack gap="16px" width="100%" maxWidth="400px" padding="12px">
-        <ImageUploadBox
-          index={1}
-          onImageSelect={(file) => handleImage1Select(file)}
-          selectedImage={image1}
-        />
-        <ImageUploadBox
-          index={2}
-          onImageSelect={(file) => handleImage2Select(file)}
-          selectedImage={image2}
-        />
-        <ImageUploadBox
-          index={3}
-          onImageSelect={(file) => handleImage3Select(file)}
-          selectedImage={image3}
-        />
+        {[0, 1, 2].map((idx) => (
+          <ImageUploadBox
+            key={idx}
+            index={idx}
+            onImageSelect={handleInsideImageSelect}
+            selectedImage={insideImages[idx]}
+          />
+        ))}
       </Stack>
 
       <Typography
@@ -188,21 +183,14 @@ export default function SecondInfoPage() {
       </Typography>
 
       <Stack gap="16px" width="100%" maxWidth="400px" padding="12px">
-        <ImageUploadBox
-          index={1}
-          onImageSelect={(file) => handleImage1Select(file)}
-          selectedImage={image1}
-        />
-        <ImageUploadBox
-          index={2}
-          onImageSelect={(file) => handleImage2Select(file)}
-          selectedImage={image2}
-        />
-        <ImageUploadBox
-          index={3}
-          onImageSelect={(file) => handleImage3Select(file)}
-          selectedImage={image3}
-        />
+        {[0, 1, 2].map((idx) => (
+          <ImageUploadBox
+            key={idx}
+            index={idx}
+            onImageSelect={handleOutsideImageSelect}
+            selectedImage={outsideImages[idx]}
+          />
+        ))}
       </Stack>
     </Stack>
   )
