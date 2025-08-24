@@ -1,16 +1,21 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, ChangeEvent } from 'react';
 import { Box, Container, Typography, Paper, Select, MenuItem, 
-    FormControl, Button, TextField, Stack, Chip} from '@mui/material';
+    FormControl, Button, TextField, Stack, Chip, CircularProgress} from '@mui/material';
 import UserProfileHeader from '../components/UserProfileHeader'; 
 import  AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import { useSetAtom } from 'jotai';
 import { creationResultAtom } from './atom/creationAtom';
 import { useRouter } from 'next/navigation'; 
+import axios from 'axios'; 
+import axiosInstance from '@/config/axios'; // 백엔드 서버용
+import aiAxiosInstance from '@/config/aiAxiosInstance'; // AI 서버용
 
 function CreateContentPage() {
-  const [contentType, setContentType] = useState('story'); // 업로드 종류
+  const router = useRouter(); 
+  const setCreationResult = useSetAtom(creationResultAtom); 
+  const [contentType, setContentType] = useState('blog'); // 업로드 종류
   const [mood, setMood] = useState('calm'); // 오늘의 느낌
   const [info, setInfo] = useState(''); // 오늘의 정보
   const [directContent, setDirectContent] = useState(''); // 내용 직접 입력
@@ -18,8 +23,8 @@ function CreateContentPage() {
   const [userTags, setUserTags] = useState<string[]>(['@someone_']); // chip 유저태그 배열 관리
   const [currentHashtag, setCurrentHashtag] = useState(''); // 해시태그 현재 입력값 저장
   const [currentUserTag, setCurrentUserTag] = useState(''); // 유저태그 현재 입력값 저장
-  const router = useRouter(); 
-  const setCreationResult = useSetAtom(creationResultAtom); 
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   // 해시태그 기능 구현
   // 'Enter' 키로 해시태그를 추가
@@ -49,18 +54,65 @@ function CreateContentPage() {
     setUserTags(userTags.filter((tag) => tag !== tagToDelete));
   };
 
-    // 결과물 실행
-  const handleCreate = () => {
+  // 사진 선택
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      setSelectedFile(event.target.files[0]);
+    }
+  };
+  
+  // 결과물 실행
+  const handleCreate = async () => {
+    if (!selectedFile) {
+      alert('이미지를 먼저 선택해주세요!');
+      return;
+    }
 
-    const mockAiResult = {
-      imageUrl: 'https://images.unsplash.com/photo-1511920183353-3c9c9b0a7a42?q=80&w=1974&auto=format&fit=crop',
-      text: `안녕하세요! Daily Alley 카페입니다.\n\n오늘 소개해드릴 메뉴는 바로 '${info}'! ${mood} 분위기와 정말 잘 어울리는 메뉴랍니다. 저희 카페에서 특별한 하루를 만들어보세요.`,
-      hashtags: ['#DailyAlley', '#동탄카페', '#오늘의추천', '#카페스타그램']
-    };
+    setIsLoading(true);
 
-    setCreationResult(mockAiResult);
+    try {
+      const formData = new FormData();
 
-    router.push('/create/result');
+      formData.append('input_image', selectedFile);
+      formData.append('user_prompt', info);
+
+      console.log("이미지 가공 요청");
+      await aiAxiosInstance.post('/v1/outpaint', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log("이미지 가공 요청 완료");
+
+      const promoParams = new URLSearchParams();
+
+      const originalFilename = selectedFile.name;
+      const filenameWithoutExt = originalFilename.substring(0, originalFilename.lastIndexOf('.'));
+      const identifier = `19_${filenameWithoutExt}`;
+
+      promoParams.append('identifier', identifier);
+      promoParams.append('store_name', 'Daily Alley 카페'); // *실제 가게 이름으로 변경 필요
+      promoParams.append('mood', mood);
+
+      const promoResponse = await aiAxiosInstance.post('/v1/generate-promo', promoParams);
+      const aiResult = promoResponse.data;
+      console.log("텍스트 생성 완료");
+
+      setCreationResult({
+        imageUrl: `https://your-image-server-base-url.com/${identifier}_food_AI.jpg`, 
+        text: aiResult.body, 
+        hashtags: aiResult.tags,
+        mood: mood, 
+      });
+
+      router.push('/create/result');
+
+    } catch (error) {
+      console.error("콘텐츠 제작에 실패했습니다:", error);
+      alert("콘텐츠 제작 중 오류가 발생했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -79,18 +131,19 @@ function CreateContentPage() {
                   onChange={(e) => setContentType(e.target.value)}
                   sx={{ '.MuiSelect-select': { paddingTop: '10px', paddingBottom: '10px' } }}
                 >
+                  <MenuItem value="blog">블로그</MenuItem>
                   <MenuItem value="story">스토리</MenuItem>
                   <MenuItem value="feed">피드</MenuItem>
-                  <MenuItem value="blog">블로그</MenuItem>
                 </Select>
               </FormControl>
               {/* 제작 버튼 */}
               <Button 
                 variant="contained" size="large" 
+                onClick={handleCreate}
+                disabled={isLoading}
                 sx={{ backgroundColor: 'grey.200', color: 'black', '&:hover': { backgroundColor: 'grey.300' }}}
-                onClick={handleCreate} 
               >
-                제작
+                {isLoading ? <CircularProgress size={24} color="inherit" /> : '제작'}
               </Button>
             </Stack>
 
@@ -126,7 +179,7 @@ function CreateContentPage() {
                 <Typography variant="body1" fontWeight="bold" sx={{ mb: 1 }}>내용 직접 입력</Typography>
                 <TextField
                   multiline
-                  rows={6} // 다른 입력창보다 조금 더 길게 설정
+                  rows={6} 
                   value={directContent}
                   onChange={(e) => setDirectContent(e.target.value)}
                   placeholder="피드에 들어갈 내용을 직접 입력해주세요."
@@ -153,8 +206,9 @@ function CreateContentPage() {
                 >
                   <AddPhotoAlternateIcon />
                   사진 선택
-                  <input type="file" hidden />
+                  <input type="file" accept="image/*" hidden onChange={handleFileChange} />
                 </Button>
+                {selectedFile && <Typography variant="body2" noWrap>{selectedFile.name}</Typography>}
               </Stack>
             </Box>
 
