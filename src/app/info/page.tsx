@@ -32,7 +32,7 @@ function StoreInfoPage() {
 
   useEffect(() => {
     fetchStoreInfo()
-  }, [fetchStoreInfo])
+  }, [])
 
   return (
     <Container maxWidth="sm" sx={{ p: 0, pb: 7 }}>
