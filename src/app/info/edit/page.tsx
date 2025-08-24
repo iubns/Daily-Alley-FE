@@ -38,21 +38,6 @@ export default function InfoEditPage() {
     }
   }
 
-  function StepPage() {
-    switch (currentStep) {
-      case 1:
-        return <FirstInfoPage />
-      case 2:
-        return <SecondInfoPage />
-      case 3:
-        return <ThirdInfoPage />
-      case 4:
-        return <FourthInfoPage />
-      default:
-        return null
-    }
-  }
-
   function handleBack() {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1)
@@ -97,7 +82,7 @@ export default function InfoEditPage() {
         </Stack>
       </Stack>
       <Stack display="flex" flex="1">
-        <StepPage />
+        <StepPage currentStep={currentStep} />
       </Stack>
       <Stack padding="12px">
         <Button
@@ -117,4 +102,19 @@ export default function InfoEditPage() {
       </Stack>
     </Stack>
   )
+}
+
+function StepPage({ currentStep }: { currentStep: number }) {
+  switch (currentStep) {
+    case 1:
+      return <FirstInfoPage />
+    case 2:
+      return <SecondInfoPage />
+    case 3:
+      return <ThirdInfoPage />
+    case 4:
+      return <FourthInfoPage />
+    default:
+      return null
+  }
 }
