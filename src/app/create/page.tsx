@@ -10,7 +10,7 @@ import { creationResultAtom } from './atom/creationAtom';
 import { useRouter } from 'next/navigation'; 
 import axios from 'axios'; 
 import axiosInstance from '@/config/axios'; // 백엔드 서버용
-import aiAxiosInstance from '@/api/aiAxiosInstance'; // AI 서버용
+import aiAxiosInstance from '@/config/aiAxiosInstance'; // AI 서버용
 
 function CreateContentPage() {
   const router = useRouter(); 
@@ -61,6 +61,7 @@ function CreateContentPage() {
     }
   };
 
+  /*
   const handleCreate = async () => {
     // 1. 파일이 선택되었는지 확인하는 로직은 그대로 둡니다.
     if (!selectedFile) {
@@ -95,8 +96,8 @@ function CreateContentPage() {
       alert("API 요청 중 오류가 발생했습니다. 콘솔을 확인해주세요.");
     }
   };
+  */
   
-  /*
   // 결과물 실행
   const handleCreate = async () => {
     if (!selectedFile) {
@@ -107,6 +108,7 @@ function CreateContentPage() {
     setIsLoading(true);
 
     try {
+      console.log("--- API 요청 직전 데이터 확인 ---");
       const presignedUrlResponse = await axiosInstance.get('/putimg', {
         params: {
           storeId: 19, // *storeId를 사용으로 변경
@@ -114,6 +116,7 @@ function CreateContentPage() {
         },
       });
       const presignedUrl = presignedUrlResponse.data.url;
+      console.log("받은 presignedUrl:", presignedUrl);
 
       // 클라우드 저장소에 이미지 업로드
       await axios.put(presignedUrl, selectedFile, {
@@ -123,13 +126,16 @@ function CreateContentPage() {
       const identifier = selectedFile.name;
 
       // AI 서버에 이미지 가공 요청
+      console.log("이미지 가공 요청");
       const outpaintParams = new URLSearchParams();
       outpaintParams.append('identifier', identifier);
       outpaintParams.append('user_prompt', info);
-
+      
       await aiAxiosInstance.post('/v1/outpaint', outpaintParams);
-
+      console.log("이미지 가공 요청 완료");
+      
       // AI 서버에 텍스트 생성 요청
+      console.log("텍스트 가공 요청");
       const promoParams = new URLSearchParams();
       promoParams.append('identifier', identifier);
       promoParams.append('store_name', 'Daily Alley 카페'); // *실제 가게 이름 받아오기
@@ -156,7 +162,6 @@ function CreateContentPage() {
       setIsLoading(false);
     }
   };
-  */
 
   return (
     <Container maxWidth="sm" sx={{ p: 0, pb: 7 }}>

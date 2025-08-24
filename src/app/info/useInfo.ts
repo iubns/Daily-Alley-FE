@@ -25,7 +25,7 @@ export function useInfo() {
     if (!storeId) {
       foundStoreId = localStorage.getItem("storeId")
       if (!foundStoreId) {
-        push("/info/edit")
+        // push("/info/edit")
         return
       }
       setStoreId(Number(foundStoreId))
