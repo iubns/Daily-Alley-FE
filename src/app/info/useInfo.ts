@@ -3,6 +3,8 @@ import { atom, useAtom } from "jotai"
 import { useRouter } from "next/navigation"
 import { StoreIdAtom } from "../atom/storeId"
 import { StoreInfo } from "./edit/useStoreEdit"
+//
+import { useEffect } from 'react';
 
 const StoreInfoAtom = atom<StoreInfo>({
   name: "",

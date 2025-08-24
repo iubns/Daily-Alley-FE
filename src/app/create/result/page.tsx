@@ -3,12 +3,13 @@
 import React, { useEffect, useState } from 'react';
 import { 
   Box, Container, Typography, Button, Divider, Paper, 
-  Stack, Chip, IconButton, Modal, TextField} from '@mui/material';
+  Stack, Chip, IconButton, Modal, TextField, CircularProgress} from '@mui/material';
 import UserProfileHeader from '../../components/UserProfileHeader';
 import { useAtom } from 'jotai';
 import { creationResultAtom } from '../atom/creationAtom';
 import { useRouter } from 'next/navigation';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'; 
+import axiosInstance from '@/config/axios'; // 백엔드 서버용
 
 // 모달(팝업)의 스타일을 정의
 const modalStyle = {
@@ -31,6 +32,9 @@ function CreateResultPage() {
   // 모달 관리
   const [openModal, setOpenModal] = useState(false);
   const [additionalInfo, setAdditionalInfo] = useState('');
+
+  // 업로드 상태 관리
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     if (!creationResult) {
@@ -60,6 +64,39 @@ function CreateResultPage() {
     setAdditionalInfo(''); // 입력창 비우기
     handleCloseModal(); // 모달 닫기
   };
+
+  // 업로드 요청 시 최종 결과물 저장
+  const handleUpload = async () => {
+    if (!creationResult) {
+      alert('업로드할 콘텐츠가 없습니다.');
+      return;
+    }
+
+    setIsUploading(true);
+
+    try {
+      // 메인 백엔드의 POST /ai API 호출
+      // *feel, hashtag, tag 값 다시 확인 필요!
+      await axiosInstance.post('/ai', {
+        storeId: 19, 
+        info: creationResult.text, 
+        feel: creationResult.mood,
+        hashtag: creationResult.hashtags.join(','), 
+        tag: '' 
+      });
+
+      alert('콘텐츠가 성공적으로 저장되었습니다!');
+      setCreationResult(null); // Jotai 저장소 비우기
+      router.push('/'); // 메인 페이지로 이동
+
+    } catch (error) {
+      console.error("DB 저장에 실패했습니다:", error);
+      alert("콘텐츠 저장 중 오류가 발생했습니다.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
 
   if (!creationResult) {
     return <Typography>콘텐츠를 먼저 제작해주세요...</Typography>;
@@ -93,11 +130,21 @@ function CreateResultPage() {
 
         {/* 하단 버튼 영역 */}
         <Stack direction="row" spacing={2}>
-          <Button variant="outlined" color="inherit" fullWidth onClick={handleOpenModal}>
+          <Button 
+          variant="outlined" 
+          color="inherit" 
+          fullWidth 
+          onClick={handleOpenModal}>
             재생성
           </Button>
-          <Button variant="contained" color="primary" fullWidth>
-            업로드
+          <Button 
+          variant="contained" 
+          color="primary" 
+          fullWidth
+          onClick={handleUpload}
+          disabled={isUploading}
+        >
+          {isUploading ? <CircularProgress size={24} /> : '업로드'}
           </Button>
         </Stack>
       </Box>
