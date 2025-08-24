@@ -5,16 +5,21 @@ import { Box, Container, Typography, Paper, Select, MenuItem,
     FormControl, Button, TextField, Stack, Chip} from '@mui/material';
 import UserProfileHeader from '../components/UserProfileHeader'; 
 import  AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
+import { useSetAtom } from 'jotai';
+import { creationResultAtom } from './atom/creationAtom';
+import { useRouter } from 'next/navigation'; 
 
 function CreateContentPage() {
   const [contentType, setContentType] = useState('story'); // 업로드 종류
   const [mood, setMood] = useState('calm'); // 오늘의 느낌
   const [info, setInfo] = useState(''); // 오늘의 정보
-    const [directContent, setDirectContent] = useState(''); // 내용 직접 입력
+  const [directContent, setDirectContent] = useState(''); // 내용 직접 입력
   const [hashtags, setHashtags] = useState<string[]>(['#해시태그']); // chip 해시태그 배열 관리
   const [userTags, setUserTags] = useState<string[]>(['@someone_']); // chip 유저태그 배열 관리
   const [currentHashtag, setCurrentHashtag] = useState(''); // 해시태그 현재 입력값 저장
   const [currentUserTag, setCurrentUserTag] = useState(''); // 유저태그 현재 입력값 저장
+  const router = useRouter(); 
+  const setCreationResult = useSetAtom(creationResultAtom); 
 
   // 해시태그 기능 구현
   // 'Enter' 키로 해시태그를 추가
@@ -44,6 +49,20 @@ function CreateContentPage() {
     setUserTags(userTags.filter((tag) => tag !== tagToDelete));
   };
 
+    // 결과물 실행
+  const handleCreate = () => {
+
+    const mockAiResult = {
+      imageUrl: 'https://images.unsplash.com/photo-1511920183353-3c9c9b0a7a42?q=80&w=1974&auto=format&fit=crop',
+      text: `안녕하세요! Daily Alley 카페입니다.\n\n오늘 소개해드릴 메뉴는 바로 '${info}'! ${mood} 분위기와 정말 잘 어울리는 메뉴랍니다. 저희 카페에서 특별한 하루를 만들어보세요.`,
+      hashtags: ['#DailyAlley', '#동탄카페', '#오늘의추천', '#카페스타그램']
+    };
+
+    setCreationResult(mockAiResult);
+
+    router.push('/create/result');
+  };
+
   return (
     <Container maxWidth="sm" sx={{ p: 0, pb: 7 }}>
       {/* 기존 헤더 재사용 */}
@@ -69,6 +88,7 @@ function CreateContentPage() {
               <Button 
                 variant="contained" size="large" 
                 sx={{ backgroundColor: 'grey.200', color: 'black', '&:hover': { backgroundColor: 'grey.300' }}}
+                onClick={handleCreate} 
               >
                 제작
               </Button>

@@ -16,7 +16,7 @@ export default function FirstInfoPage() {
   const { storeInfo, setStoreInfo } = useStoreEdit()
 
   useEffect(() => {
-    console.log(storeInfo)
+    setStoreInfo((prev) => ({ ...prev, type: category }))
   }, [category])
 
   return (
@@ -24,14 +24,20 @@ export default function FirstInfoPage() {
       <Stack textAlign="center">1. 기본 가게 정보를 등록해주세요.</Stack>
 
       <Stack gap="24px" width="100%" maxWidth="400px" mt="24px" padding="12px">
-        <TextField label="가게 이름" fullWidth size="small" />
+        <TextField
+          label="가게 이름"
+          fullWidth
+          size="small"
+          value={storeInfo.name}
+          onChange={(e) => setStoreInfo({ ...storeInfo, name: e.target.value })}
+        />
         <FormControl fullWidth size="small">
           <InputLabel id="category-select-label">업종</InputLabel>
           <Select
             label="업종"
             value={category}
             labelId="category-select-label"
-            onChange={(e) => setCategory(e.target.value)}
+            onChange={(e) => setCategory(e.target.value as string)}
           >
             <MenuItem value="cafe">카페</MenuItem>
             <MenuItem value="restoran">음식점</MenuItem>
