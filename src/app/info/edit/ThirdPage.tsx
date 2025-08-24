@@ -1,7 +1,5 @@
 "use client"
 
-import { useState } from "react"
-import axios from "@/config/axios"
 import { useAtomValue } from "jotai"
 import { Stack, TextField } from "@mui/material"
 import { StoreIdAtom } from "@/app/atom/storeId"

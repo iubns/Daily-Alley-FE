@@ -17,14 +17,16 @@ export function useInfo() {
   const [storeInfo, setStoreInfo] = useAtom(StoreInfoAtom)
 
   async function fetchStoreInfo() {
+    console.log("storeId", storeId)
+
+    var foundStoreId: number | string | null = storeId
     if (!storeId) {
-      const storedId = localStorage.getItem("storeId")
-      if (storedId) {
-        setStoreId(Number(storedId))
-      } else {
-        //push("/info/edit")
+      foundStoreId = localStorage.getItem("storeId")
+      if (!foundStoreId) {
+        push("/info/edit")
         return
       }
+      setStoreId(Number(foundStoreId))
     }
 
     if (storeInfo.name) {
@@ -32,7 +34,7 @@ export function useInfo() {
     }
 
     const { data, status } = await axios.get<StoreInfo>(
-      `/store?storeId=${storeId}`
+      `/store?storeId=${foundStoreId}`
     )
 
     if (status === 200) {
