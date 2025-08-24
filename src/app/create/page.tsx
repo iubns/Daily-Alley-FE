@@ -60,43 +60,6 @@ function CreateContentPage() {
       setSelectedFile(event.target.files[0]);
     }
   };
-
-  /*
-  const handleCreate = async () => {
-    // 1. 파일이 선택되었는지 확인하는 로직은 그대로 둡니다.
-    if (!selectedFile) {
-      alert('이미지를 먼저 선택해주세요!');
-      return;
-    }
-
-    // 2. API 요청을 보내기 '직전'에, 우리가 보낼 값들을 확인하기 위한 console.log를 추가합니다.
-    const storeId = 19; // 임시 ID
-    const fileName = selectedFile.name;
-    console.log("--- API 요청 직전 데이터 확인 ---");
-    console.log("보낼 storeId:", storeId, "| 타입:", typeof storeId);
-    console.log("보낼 fileName:", fileName, "| 타입:", typeof fileName);
-    console.log("---------------------------------");
-
-    // 3. 에러 핸들링을 위해 try...catch 문으로 감싸줍니다.
-    try {
-      // 4. 이 부분이 바로 유진님이 원래 가지고 계셨던 핵심 코드입니다.
-      const presignedUrlResponse = await axiosInstance.get('/putimg', {
-        params: {
-          storeId: storeId,
-          name: fileName,
-        },
-      });
-
-      // 만약 요청이 성공했다면, 어떤 응답이 오는지도 확인해봅시다.
-      console.log("API 요청 성공! 받은 데이터:", presignedUrlResponse.data);
-
-    } catch (error) {
-      // 요청이 실패하면 이곳에서 에러를 잡아냅니다.
-      console.error("API 요청 실패:", error);
-      alert("API 요청 중 오류가 발생했습니다. 콘솔을 확인해주세요.");
-    }
-  };
-  */
   
   // 결과물 실행
   const handleCreate = async () => {
@@ -108,45 +71,34 @@ function CreateContentPage() {
     setIsLoading(true);
 
     try {
-      console.log("--- API 요청 직전 데이터 확인 ---");
-      const presignedUrlResponse = await axiosInstance.get('/putimg', {
-        params: {
-          storeId: 19, // *storeId를 사용으로 변경
-          name: selectedFile.name,
+      const formData = new FormData();
+
+      formData.append('input_image', selectedFile);
+      formData.append('user_prompt', info);
+
+      console.log("이미지 가공 요청");
+      await aiAxiosInstance.post('/v1/outpaint', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
         },
       });
-      const presignedUrl = presignedUrlResponse.data.url;
-      console.log("받은 presignedUrl:", presignedUrl);
-
-      // 클라우드 저장소에 이미지 업로드
-      await axios.put(presignedUrl, selectedFile, {
-        headers: { 'Content-Type': selectedFile.type },
-      });
-      
-      const identifier = selectedFile.name;
-
-      // AI 서버에 이미지 가공 요청
-      console.log("이미지 가공 요청");
-      const outpaintParams = new URLSearchParams();
-      outpaintParams.append('identifier', identifier);
-      outpaintParams.append('user_prompt', info);
-      
-      await aiAxiosInstance.post('/v1/outpaint', outpaintParams);
       console.log("이미지 가공 요청 완료");
-      
-      // AI 서버에 텍스트 생성 요청
-      console.log("텍스트 가공 요청");
+
       const promoParams = new URLSearchParams();
+
+      const originalFilename = selectedFile.name;
+      const filenameWithoutExt = originalFilename.substring(0, originalFilename.lastIndexOf('.'));
+      const identifier = `19_${filenameWithoutExt}`;
+
       promoParams.append('identifier', identifier);
-      promoParams.append('store_name', 'Daily Alley 카페'); // *실제 가게 이름 받아오기
+      promoParams.append('store_name', 'Daily Alley 카페'); // *실제 가게 이름으로 변경 필요
       promoParams.append('mood', mood);
 
       const promoResponse = await aiAxiosInstance.post('/v1/generate-promo', promoParams);
-      const aiResult = promoResponse.data; 
+      const aiResult = promoResponse.data;
+      console.log("텍스트 생성 완료");
 
-      // 최종 결과를 Jotai에 저장
       setCreationResult({
-        // *최종 이미지 URL 확인
         imageUrl: `https://your-image-server-base-url.com/${identifier}_food_AI.jpg`, 
         text: aiResult.body, 
         hashtags: aiResult.tags,
