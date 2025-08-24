@@ -1,6 +1,5 @@
 import axios from "@/config/axios"
 import { atom, useAtom, useSetAtom } from "jotai"
-import { useEffect } from "react"
 
 const StoreInfoAtom = atom<StoreInfo>({
   name: "",

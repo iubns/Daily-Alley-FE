@@ -3,6 +3,7 @@ import { atom, useAtom } from "jotai"
 import { useRouter } from "next/navigation"
 import { StoreIdAtom } from "../atom/storeId"
 import { StoreInfo } from "./edit/useStoreEdit"
+import { useCallback } from "react"
 
 const StoreInfoAtom = atom<StoreInfo>({
   name: "",
@@ -15,6 +16,9 @@ export function useInfo() {
   const { push } = useRouter()
   const [storeId, setStoreId] = useAtom(StoreIdAtom)
   const [storeInfo, setStoreInfo] = useAtom(StoreInfoAtom)
+  const [contentFeel, setContentFeel] = useAtom(
+    atom<{ picFeel: string; postFeel: string }>({ picFeel: "", postFeel: "" })
+  )
 
   async function fetchStoreInfo() {
     console.log("storeId", storeId)
@@ -47,5 +51,7 @@ export function useInfo() {
   return {
     storeInfo,
     fetchStoreInfo,
+    contentFeel,
+    fetchContentFeel,
   }
 }
