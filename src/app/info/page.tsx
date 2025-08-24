@@ -13,18 +13,9 @@ import UserProfileHeader from "../components/UserProfileHeader"
 import { useRouter } from "next/navigation"
 import { useInfo } from "./useInfo"
 
-// 임시 데이터
-const mockStoreData = {
-  mainImage:
-    "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=1974&auto=format&fit=crop",
-  description: `설문으로 받은
-  여러가지 가게정보에 대한
-  내용이 들어갈 부분`,
-}
-
 function StoreInfoPage() {
   const { push } = useRouter()
-  const { storeInfo, fetchStoreInfo } = useInfo()
+  const { storeInfo, fetchStoreInfo, contentFeel, fetchContentFeel } = useInfo()
 
   function handleEditClick() {
     push("/info/edit")
@@ -32,7 +23,7 @@ function StoreInfoPage() {
 
   useEffect(() => {
     fetchStoreInfo()
-  }, [fetchStoreInfo])
+  }, [])
 
   return (
     <Container maxWidth="sm" sx={{ p: 0, pb: 7 }}>
@@ -41,22 +32,7 @@ function StoreInfoPage() {
       <Divider />
 
       <Box sx={{ p: 2 }}>
-        {/* 가게 대표 이미지 */}
-        <Paper
-          component="img"
-          src={mockStoreData.mainImage}
-          alt="가게 대표 이미지"
-          elevation={0}
-          sx={{
-            width: "100%",
-            height: 200,
-            objectFit: "cover",
-            borderRadius: 2,
-            mb: 3,
-          }}
-        />
-
-        {/* 가게 설명 타이틀, 수정 버튼 */}
+        {/* 가게 정보 타이틀, 수정 버튼 */}
         <Box
           sx={{
             display: "flex",
@@ -82,9 +58,27 @@ function StoreInfoPage() {
           </Button>
         </Box>
 
-        {/* 가게 설명 내용 */}
-        <Typography variant="body1" sx={{ whiteSpace: "pre-wrap" }}>
-          {storeInfo.description}
+        {/* 가게 정보 상세 */}
+        <Typography variant="body1" sx={{ whiteSpace: "pre-wrap", mb: 2 }}>
+          <strong>이름:</strong> {storeInfo.name}
+          <br />
+          <strong>업종:</strong> {storeInfo.type}
+          <br />
+          <strong>위치:</strong> {storeInfo.location}
+          <br />
+          <strong>설명:</strong> {storeInfo.description}
+        </Typography>
+
+        <Divider sx={{ my: 2 }} />
+
+        {/* AI 컨텐츠 느낌 조회 */}
+        <Typography variant="h6" fontWeight="bold" sx={{ mb: 1 }}>
+          AI 컨텐츠 느낌
+        </Typography>
+        <Typography variant="body2" sx={{ mb: 1 }}>
+          <strong>사진 느낌:</strong> {contentFeel.picFeel || "-"}
+          <br />
+          <strong>게시글 느낌:</strong> {contentFeel.postFeel || "-"}
         </Typography>
       </Box>
     </Container>
