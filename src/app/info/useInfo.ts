@@ -3,7 +3,6 @@ import { atom, useAtom } from "jotai"
 import { useRouter } from "next/navigation"
 import { StoreIdAtom } from "../atom/storeId"
 import { StoreInfo } from "./edit/useStoreEdit"
-import { useEffect } from 'react';
 import { useCallback } from "react"
 
 const StoreInfoAtom = atom<StoreInfo>({
@@ -43,7 +42,7 @@ export function useInfo() {
   )
 
   async function fetchStoreInfo() {
-    var foundStoreId: number | string | null = storeId
+    let foundStoreId: number | string | null = storeId
     if (!storeId) {
       foundStoreId = localStorage.getItem("storeId")
       if (!foundStoreId) {
