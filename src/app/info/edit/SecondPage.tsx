@@ -193,8 +193,7 @@ export default function SecondInfoPage() {
       })
       if (res.status !== 200) throw new Error("이미지 업로드 실패")
       // 성공 처리 (예: 알림)
-    } catch (err: any) {
-      setUploadError(err.message || "업로드 중 오류 발생")
+    } catch (err) {
     } finally {
       setIsUploading(false)
     }

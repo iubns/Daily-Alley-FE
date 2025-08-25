@@ -188,7 +188,7 @@ function CreateResultPage() {
             );
           })()}
         </Typography>
-            {/*}
+            {/*
             {creationResult.body.map(item =>
               item.startsWith('http') ? (
                 <img
