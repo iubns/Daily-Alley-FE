@@ -66,20 +66,6 @@ function CreateResultPage() {
   }
 
   // 모달을 열기
-  const handleOpenModal = () => setOpenModal(true)
-  // 모달을 닫기
-  const handleCloseModal = () => setOpenModal(false)
-
-  // 재생성 요청
-  const handleNextResult = () => {
-    if (creationResult && currentIndex < creationResult.body.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-    }
-  };
-
-<<<<<<< Updated upstream
-=======
-  // 모달을 열기
   const handleOpenModal = () => setOpenModal(true);
   // 모달을 닫기
   const handleCloseModal = () => setOpenModal(false);
@@ -91,7 +77,6 @@ function CreateResultPage() {
     }
   };
 
->>>>>>> Stashed changes
   const handleRegenerate = () => {
     /*
     if (creationResult) {
