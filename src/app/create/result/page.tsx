@@ -89,7 +89,6 @@ function CreateResultPage() {
         storeId: localStorage.getItem("storeId") || 0,
         info: fullTextContent,
         hashtag: currentVariant.hashtags.join(","),
-        tag: "",
       })
 
       alert("콘텐츠가 성공적으로 저장되었습니다!")
@@ -169,7 +168,7 @@ function CreateResultPage() {
                 alt="본문 이미지"
               />
             ) : (
-              <span key={item + index}>{item}</span>
+              <span key={item + index}>{item.replaceAll("\n", "")}</span>
             )
           )}
           <Typography
