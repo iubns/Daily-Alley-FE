@@ -8,7 +8,7 @@ export default function FourthInfoPage() {
   const aiImageStyles = [
     {
       label: "모던 & 시크",
-      imageUrl: "",
+      imageUrl: "/ai_pre_1.jpg",
       prompts: [
         "깨끗한 흰색 대리석 테이블 위, 밝은 자연광이 들어오는 창가",
         "심플한 무광 회색 배경에 그림자가 부드럽게 지는 구도",
@@ -17,7 +17,7 @@ export default function FourthInfoPage() {
     },
     {
       label: "따뜻 & 아늑",
-      imageUrl: "",
+      imageUrl: "/ai_pre_2.jpg",
       prompts: [
         "결이 살아있는 따뜻한 원목 테이블, 뒤에는 아늑한 느낌의 벽돌 벽",
         "체크무늬 테이블보 위, 따스한 전구 조명이 비추는 장면",
@@ -26,7 +26,7 @@ export default function FourthInfoPage() {
     },
     {
       label: "고급 & 드라마틱",
-      imageUrl: "",
+      imageUrl: "/ai_pre_3.jpg",
       prompts: [
         "어두운 검은색 배경에 음식 위로만 한 줄기 조명이 떨어지는 극적인 연출",
         "거친 질감의 검은색 돌판 위, 음식의 증기가 피어오르는 모습",
@@ -35,20 +35,11 @@ export default function FourthInfoPage() {
     },
     {
       label: "자연 & 건강",
-      imageUrl: "",
+      imageUrl: "/ai_pre_4.jpg",
       prompts: [
         "햇살이 잘 드는 야외 정원의 나무 테이블 위, 싱그러운 잎사귀들",
         "라탄 매트 위, 주변에는 신선한 과일과 채소가 놓인 모습",
         "깨끗한 흰색 천 위, 심플하고 건강한 느낌",
-      ],
-    },
-    {
-      label: "빈티지 & 레트로",
-      imageUrl: "",
-      prompts: [
-        "오래된 신문지나 잡지 위에 놓인 음식, 앤티크한 느낌",
-        "살짝 빛바랜 색감의 낡은 금속 쟁반 위, 복고풍 감성",
-        "어두운 밤, 네온사인이 살짝 비치는 창가의 테이블",
       ],
     },
   ]
@@ -129,7 +120,7 @@ export default function FourthInfoPage() {
         >
           사진 스타일 및 프롬프트
         </Typography>
-        <Stack gap="16px">
+        <Stack gap="16px" direction="row">
           {aiImageStyles.map((style, styleIdx) => (
             <Stack key={styleIdx}>
               <Typography variant="subtitle2" color="primary" sx={{ mb: 1 }}>
@@ -137,8 +128,8 @@ export default function FourthInfoPage() {
               </Typography>
               <Stack direction="row" gap="8px">
                 <Stack
-                  minWidth="180px"
-                  height="80px"
+                  minWidth="140px"
+                  height="180px"
                   bgcolor={selectedPicIdx === styleIdx ? "#e3f2fd" : "#f0f0f0"}
                   borderRadius="8px"
                   display="flex"
@@ -153,9 +144,11 @@ export default function FourthInfoPage() {
                   }}
                   onClick={() => handlePicFeelSelect(styleIdx)}
                 >
-                  <Typography variant="body2" color="text.secondary">
-                    {style.prompts.join(",")}
-                  </Typography>
+                  <img
+                    src={style.imageUrl}
+                    alt={style.label}
+                    style={{ maxHeight: "100%", maxWidth: "100%" }}
+                  />
                 </Stack>
               </Stack>
             </Stack>
