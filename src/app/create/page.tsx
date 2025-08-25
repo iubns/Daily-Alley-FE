@@ -166,16 +166,29 @@ function CreateContentPage() {
       console.log("텍스트 생성 완료");
 
       if (aiResult && aiResult.variants && aiResult.variants.length > 0) {
-        // AI가 생성한 여러개의 variant를 순회하며 body 텍스트를 분리합니다.
-        const processedVariants = aiResult.variants.map((variant: any) => {
+        const processedVariants = aiResult.variants.map((variant: {
+          headline: string;
+          body: string;
+          cta: string;
+          tags?: string[];
+        }) => {
           return {
             headline: variant.headline,
-            // 요청하신대로 http 주소를 기준으로 텍스트와 이미지 URL을 분리합니다.
             body: variant.body.split(/(https?:\/\/[^\s]+)/g).filter(Boolean) as string[],
             cta: variant.cta,
             hashtags: variant.tags || [],
           };
         });
+        // // AI가 생성한 여러개의 variant를 순회하며 body 텍스트를 분리합니다.
+        // const processedVariants = aiResult.variants.map((variant: any) => {
+        //   return {
+        //     headline: variant.headline,
+        //     // 요청하신대로 http 주소를 기준으로 텍스트와 이미지 URL을 분리합니다.
+        //     body: variant.body.split(/(https?:\/\/[^\s]+)/g).filter(Boolean) as string[],
+        //     cta: variant.cta,
+        //     hashtags: variant.tags || [],
+        //   };
+        // });
 
         // 가공된 결과물 배열 전체를 atom에 저장합니다.
         setCreationResult({
