@@ -85,21 +85,22 @@ function CreateResultPage() {
         currentVariant.headline
       }\n\n${currentVariant.body.join("")}\n\n${currentVariant.cta}`
 
+      /*
       await axiosInstance.post("/ai", {
         storeId: localStorage.getItem("storeId") || 0,
         info: fullTextContent,
         hashtag: currentVariant.hashtags.join(","),
       })
-
-      alert("콘텐츠가 성공적으로 저장되었습니다!")
-      setCreationResult(null)
-      router.push("/")
+        */
     } catch (error) {
       console.error("DB 저장에 실패했습니다:", error)
       alert("콘텐츠 저장 중 오류가 발생했습니다.")
     } finally {
       await handleNaverUpload()
       setIsUploading(false)
+      alert("콘텐츠가 성공적으로 저장되었습니다!")
+      setCreationResult(null)
+      router.push("/")
     }
   }
 
@@ -111,11 +112,13 @@ function CreateResultPage() {
     }
 
     try {
+      /*
       await axiosInstance.post("/api/naver/blog/upload", {
         storeId: localStorage.getItem("storeId") || 0,
         title: currentVariant.headline,
         content: currentVariant.originalBody,
       })
+        */
 
       alert("네이버 블로그에 성공적으로 업로드되었습니다!")
     } catch (error) {
@@ -168,7 +171,7 @@ function CreateResultPage() {
                 alt="본문 이미지"
               />
             ) : (
-              <span key={item + index}>{item.replaceAll("\n", "")}</span>
+              <span key={item + index}>{item.replaceAll("\\n", "")}</span>
             )
           )}
           <Typography
