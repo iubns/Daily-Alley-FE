@@ -5,6 +5,53 @@ import { useState } from "react"
 import useStoreEdit from "./useStoreEdit"
 
 export default function FourthInfoPage() {
+  const aiImageStyles = [
+    {
+      label: "모던 & 시크",
+      imageUrl: "",
+      prompts: [
+        "깨끗한 흰색 대리석 테이블 위, 밝은 자연광이 들어오는 창가",
+        "심플한 무광 회색 배경에 그림자가 부드럽게 지는 구도",
+        "차가운 느낌의 콘크리트 질감 바닥, 위에서 아래로 찍는 탑뷰 스타일",
+      ],
+    },
+    {
+      label: "따뜻 & 아늑",
+      imageUrl: "",
+      prompts: [
+        "결이 살아있는 따뜻한 원목 테이블, 뒤에는 아늑한 느낌의 벽돌 벽",
+        "체크무늬 테이블보 위, 따스한 전구 조명이 비추는 장면",
+        "오래된 나무 도마 위, 주변에는 허브나 작은 꽃이 놓인 자연스러운 느낌",
+      ],
+    },
+    {
+      label: "고급 & 드라마틱",
+      imageUrl: "",
+      prompts: [
+        "어두운 검은색 배경에 음식 위로만 한 줄기 조명이 떨어지는 극적인 연출",
+        "거친 질감의 검은색 돌판 위, 음식의 증기가 피어오르는 모습",
+        "짙은 색의 가죽 소파 앞, 낮은 조도의 고급스러운 바(Bar) 분위기",
+      ],
+    },
+    {
+      label: "자연 & 건강",
+      imageUrl: "",
+      prompts: [
+        "햇살이 잘 드는 야외 정원의 나무 테이블 위, 싱그러운 잎사귀들",
+        "라탄 매트 위, 주변에는 신선한 과일과 채소가 놓인 모습",
+        "깨끗한 흰색 천 위, 심플하고 건강한 느낌",
+      ],
+    },
+    {
+      label: "빈티지 & 레트로",
+      imageUrl: "",
+      prompts: [
+        "오래된 신문지나 잡지 위에 놓인 음식, 앤티크한 느낌",
+        "살짝 빛바랜 색감의 낡은 금속 쟁반 위, 복고풍 감성",
+        "어두운 밤, 네온사인이 살짝 비치는 창가의 테이블",
+      ],
+    },
+  ]
   const aiPromotionStyles = [
     {
       label: "친근하고 따뜻한 스타일",
@@ -45,13 +92,18 @@ export default function FourthInfoPage() {
 
   const { contentFeel, setContentFeel } = useStoreEdit()
   const [selectedPicIdx, setSelectedPicIdx] = useState<number | null>(null)
+  const [selectedPicPromptIdx, setSelectedPicPromptIdx] = useState<
+    number | null
+  >(null)
   const [selectedPostIdx, setSelectedPostIdx] = useState<number | null>(null)
 
-  const handlePicFeelSelect = (idx: number) => {
-    setSelectedPicIdx(idx)
+  // 이미지 스타일 선택 시 프롬프트 저장
+  const handlePicFeelSelect = (styleIdx: number, promptIdx: number) => {
+    setSelectedPicIdx(styleIdx)
+    setSelectedPicPromptIdx(promptIdx)
     setContentFeel({
       ...contentFeel,
-      picFeel: aiPromotionStyles[idx].label,
+      picFeel: aiImageStyles[styleIdx].prompts.join(","),
     })
   }
 
@@ -76,35 +128,48 @@ export default function FourthInfoPage() {
           variant="body2"
           color="text.secondary"
           width="100%"
-          sx={{
-            textAlign: "left",
-          }}
+          sx={{ textAlign: "left" }}
         >
-          사진 느낌
+          사진 스타일 및 프롬프트
         </Typography>
-        <Stack direction="row" width="100%" overflow="scroll" gap="12px">
-          {aiPromotionStyles.map((style, index) => (
-            <Stack
-              key={index}
-              minWidth="200px"
-              height="140px"
-              bgcolor={selectedPicIdx === index ? "#e3f2fd" : "#f0f0f0"}
-              borderRadius="8px"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              sx={{
-                cursor: "pointer",
-                border:
-                  selectedPicIdx === index
-                    ? "2px solid #1976D2"
-                    : "1px solid #ccc",
-              }}
-              onClick={() => handlePicFeelSelect(index)}
-            >
-              <Typography variant="body2" color="text.secondary">
+        <Stack gap="16px">
+          {aiImageStyles.map((style, styleIdx) => (
+            <Stack key={styleIdx}>
+              <Typography variant="subtitle2" color="primary" sx={{ mb: 1 }}>
                 {style.label}
               </Typography>
+              <Stack direction="row" gap="8px">
+                {style.prompts.map((prompt, promptIdx) => (
+                  <Stack
+                    key={promptIdx}
+                    minWidth="180px"
+                    height="80px"
+                    bgcolor={
+                      selectedPicIdx === styleIdx &&
+                      selectedPicPromptIdx === promptIdx
+                        ? "#e3f2fd"
+                        : "#f0f0f0"
+                    }
+                    borderRadius="8px"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    sx={{
+                      cursor: "pointer",
+                      border:
+                        selectedPicIdx === styleIdx &&
+                        selectedPicPromptIdx === promptIdx
+                          ? "2px solid #1976D2"
+                          : "1px solid #ccc",
+                    }}
+                    onClick={() => handlePicFeelSelect(styleIdx, promptIdx)}
+                  >
+                    <Typography variant="body2" color="text.secondary">
+                      {prompt}
+                    </Typography>
+                  </Stack>
+                ))}
+              </Stack>
             </Stack>
           ))}
         </Stack>

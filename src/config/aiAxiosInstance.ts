@@ -1,13 +1,12 @@
-import axios from 'axios';
+import axios from "axios"
 
-const AI_API_BASE_URL = 'http://daily-alley-api.iubns.net:7100/';
+const AI_API_BASE_URL = "https://daily-alley-api.iubns.net:7100/"
 
 const aiAxiosInstance = axios.create({
   baseURL: AI_API_BASE_URL,
-  headers: {
-  },
+  headers: {},
   // 응답 대시 시간 (30초)
-  timeout: 120000, 
-});
+  timeout: 120000,
+})
 
-export default aiAxiosInstance;
+export default aiAxiosInstance
