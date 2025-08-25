@@ -1,4 +1,5 @@
 import axios from "@/config/axios"
+import aiAxiosInstance from "@/config/aiAxiosInstance"
 import { atom, useAtom, useSetAtom } from "jotai"
 
 const StoreInfoAtom = atom<StoreInfo>({
@@ -28,6 +29,7 @@ const StoreSnsInfoAtom = atom<StoreSNSInfo>({
   type: "NAVER",
 })
 
+const StoreImageAtom = atom<File[]>([])
 export interface StoreInfo {
   name: string
   type: string
@@ -52,6 +54,27 @@ export default function useStoreEdit() {
   const [storeSnsInfo, setStoreSnsInfo] = useAtom(StoreSnsInfoAtom)
   const [contentFeel, setContentFeel] = useAtom(ContentFeelAtom)
   const setStoreId = useSetAtom(atom<number | null>(null))
+  const [storeImages, setStoreImages] = useAtom(StoreImageAtom)
+
+  // 이미지 업로드 함수
+  async function uploadStoreImages() {
+    if (!storeImages || storeImages.length === 0) return null
+    const storeId = localStorage.getItem("storeId")
+    const formData = new FormData()
+    storeImages.forEach((file) => {
+      formData.append("images", file)
+    })
+    formData.append("storeId", storeId || "")
+    const { status, data } = await aiAxiosInstance.post(
+      "/v1/upload-store-images",
+      formData,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      }
+    )
+    return { status, data }
+  }
+
   async function saveContentFeel() {
     const { status } = await axios.post("/contents", {
       ...contentFeel,
@@ -94,5 +117,8 @@ export default function useStoreEdit() {
     contentFeel,
     setContentFeel,
     saveContentFeel,
+    storeImages,
+    setStoreImages,
+    uploadStoreImages,
   }
 }
