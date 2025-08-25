@@ -172,7 +172,7 @@ function CreateContentPage() {
       const imageUrl = URL.createObjectURL(data)
       const promoParams = new URLSearchParams()
 
-      promoParams.append("store_name", "Daily Alley 카페") // *실제 가게 이름으로 변경 필요
+      promoParams.append("store_name", storeInfo?.name || "") // *실제 가게 이름으로 변경 필요
       promoParams.append(
         "mood",
         feel + " 그리고 아래 정보들을 추가해줘 " + info
