@@ -10,17 +10,17 @@ import { useAtom } from 'jotai';
 import { creationResultAtom } from '../atom/creationAtom';
 import { useRouter } from 'next/navigation';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'; 
-import NavigateNextIcon from '@mui/icons-material/NavigateNext'; // [추가] 다음 결과 아이콘
-import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore'; // [추가] 이전 결과 아이콘
+import NavigateNextIcon from '@mui/icons-material/NavigateNext'; 
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore'; 
 import axiosInstance from '@/config/axios';
 
 function CreateResultPage() {
   const router = useRouter();
   const [creationResult, setCreationResult] = useAtom(creationResultAtom);
   
-  // 현재 보여줄 결과물의 인덱스를 관리하는 상태
+  // 현재 보여줄 결과물의 인덱스를 관리
   const [currentIndex, setCurrentIndex] = useState(0);
-
+  // 업로드 상태를 관리
   const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
@@ -46,19 +46,16 @@ function CreateResultPage() {
     }
   };
 
-  // 해시태그 삭제 기능 (현재 variant에 대해서만 동작하도록 수정)
+  // 해시태그 삭제 기능
   const handleHashtagDelete = (tagToDelete: string) => {
     if (creationResult && currentVariant) {
       const updatedHashtags = currentVariant.hashtags.filter(
         (tag) => tag !== tagToDelete
       );
 
-      // 전체 variants 배열의 복사본을 만듭니다.
       const updatedVariants = [...creationResult.variants];
-      // 현재 인덱스의 variant 객체를 업데이트된 해시태그로 교체합니다.
       updatedVariants[currentIndex] = { ...currentVariant, hashtags: updatedHashtags };
 
-      // 전체 상태를 업데이트합니다.
       setCreationResult({ ...creationResult, variants: updatedVariants });
     }
   };
@@ -72,7 +69,6 @@ function CreateResultPage() {
     setIsUploading(true);
 
     try {
-      // 현재 화면에 보이는 variant의 텍스트를 조합합니다.
       const fullTextContent = `${currentVariant.headline}\n\n${currentVariant.body.join('')}\n\n${currentVariant.cta}`;
 
       await axiosInstance.post('/ai', {
@@ -94,7 +90,6 @@ function CreateResultPage() {
     }
   };
   
-  // creationResult가 없으면 로딩 또는 리디렉션 처리
   if (!creationResult || !currentVariant) {
     return <Typography>콘텐츠를 먼저 제작해주세요...</Typography>;
   }
@@ -147,9 +142,21 @@ function CreateResultPage() {
 
         {/* 하단 버튼 영역 */}
         <Stack direction="row" spacing={2} alignItems="center">
-          {/* 재생성 버튼을 '이전/다음' 버튼으로 변경 */}
-          <Paper variant="outlined" sx={{ display: 'flex', alignItems: 'center', borderRadius: '8px' }}>
-            <IconButton onClick={handlePrevResult} disabled={currentIndex === 0}>
+          {/* '이전/다음' 버튼 */}
+          <Paper
+            variant="outlined"
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              borderRadius: '8px',
+              minWidth: 180,
+              px: 2, 
+            }}
+            >
+            <IconButton 
+            onClick={handlePrevResult} 
+            disabled={currentIndex === 0} 
+            size="large">
               <NavigateBeforeIcon />
             </IconButton>
             <Typography variant="body2" sx={{ px: 1 }}>
@@ -166,6 +173,7 @@ function CreateResultPage() {
             fullWidth
             onClick={handleUpload}
             disabled={isUploading}
+            sx={{ minWidth: 100, px: 2 }}
           >
             {isUploading ? <CircularProgress size={24} /> : '업로드'}
           </Button>
