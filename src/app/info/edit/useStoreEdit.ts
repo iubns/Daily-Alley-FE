@@ -78,7 +78,7 @@ export default function useStoreEdit() {
   async function saveContentFeel() {
     const { status } = await axios.post("/contents", {
       ...contentFeel,
-      storeId: Number(localStorage.getItem("storeId")),
+      storeId: localStorage.getItem("storeId"),
     })
     return status
   }
@@ -91,7 +91,6 @@ export default function useStoreEdit() {
 
     if (status === 200) {
       localStorage.setItem("storeId", String(data.storeId))
-      console.log("이거 맞잖아?", data.storeId)
       setStoreId(data.storeId)
       setStoreSnsInfo((prev) => ({ ...prev, storeId: data.storeId }))
       setContentFeel((prev) => ({ ...prev, storeId: data.storeId }))

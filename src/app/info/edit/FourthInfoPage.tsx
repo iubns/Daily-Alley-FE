@@ -92,15 +92,12 @@ export default function FourthInfoPage() {
 
   const { contentFeel, setContentFeel } = useStoreEdit()
   const [selectedPicIdx, setSelectedPicIdx] = useState<number | null>(null)
-  const [selectedPicPromptIdx, setSelectedPicPromptIdx] = useState<
-    number | null
-  >(null)
+
   const [selectedPostIdx, setSelectedPostIdx] = useState<number | null>(null)
 
   // 이미지 스타일 선택 시 프롬프트 저장
-  const handlePicFeelSelect = (styleIdx: number, promptIdx: number) => {
+  const handlePicFeelSelect = (styleIdx: number) => {
     setSelectedPicIdx(styleIdx)
-    setSelectedPicPromptIdx(promptIdx)
     setContentFeel({
       ...contentFeel,
       picFeel: aiImageStyles[styleIdx].prompts.join(","),
@@ -139,36 +136,27 @@ export default function FourthInfoPage() {
                 {style.label}
               </Typography>
               <Stack direction="row" gap="8px">
-                {style.prompts.map((prompt, promptIdx) => (
-                  <Stack
-                    key={promptIdx}
-                    minWidth="180px"
-                    height="80px"
-                    bgcolor={
-                      selectedPicIdx === styleIdx &&
-                      selectedPicPromptIdx === promptIdx
-                        ? "#e3f2fd"
-                        : "#f0f0f0"
-                    }
-                    borderRadius="8px"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    sx={{
-                      cursor: "pointer",
-                      border:
-                        selectedPicIdx === styleIdx &&
-                        selectedPicPromptIdx === promptIdx
-                          ? "2px solid #1976D2"
-                          : "1px solid #ccc",
-                    }}
-                    onClick={() => handlePicFeelSelect(styleIdx, promptIdx)}
-                  >
-                    <Typography variant="body2" color="text.secondary">
-                      {prompt}
-                    </Typography>
-                  </Stack>
-                ))}
+                <Stack
+                  minWidth="180px"
+                  height="80px"
+                  bgcolor={selectedPicIdx === styleIdx ? "#e3f2fd" : "#f0f0f0"}
+                  borderRadius="8px"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  sx={{
+                    cursor: "pointer",
+                    border:
+                      selectedPicIdx === styleIdx
+                        ? "2px solid #1976D2"
+                        : "1px solid #ccc",
+                  }}
+                  onClick={() => handlePicFeelSelect(styleIdx)}
+                >
+                  <Typography variant="body2" color="text.secondary">
+                    {style.prompts.join(",")}
+                  </Typography>
+                </Stack>
               </Stack>
             </Stack>
           ))}
