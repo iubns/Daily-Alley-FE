@@ -17,7 +17,8 @@ export default function InfoEditPage() {
   const { push } = useRouter()
   const [progress, setProgress] = useState(25)
   const [currentStep, setCurrentStep] = useState(1)
-  const { registrationStoreInfo, saveStoreSnsInfo } = useStoreEdit()
+  const { registrationStoreInfo, saveStoreSnsInfo, saveContentFeel } =
+    useStoreEdit()
   const storeId = useAtomValue(StoreIdAtom)
 
   useEffect(() => {
@@ -33,6 +34,7 @@ export default function InfoEditPage() {
     if (currentStep === 4) {
       await registrationStoreInfo()
       await saveStoreSnsInfo()
+      await saveContentFeel()
 
       push("/info")
     }

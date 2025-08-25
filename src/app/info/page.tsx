@@ -23,6 +23,7 @@ function StoreInfoPage() {
 
   useEffect(() => {
     fetchStoreInfo()
+    fetchContentFeel()
   }, [])
 
   return (
