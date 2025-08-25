@@ -1,8 +1,10 @@
 "use client"
 
-import { Stack, Box, Typography, IconButton } from "@mui/material"
+import { Stack, Box, Typography, IconButton, Button } from "@mui/material"
+import aiAxios from "@/config/axios"
 import { PhotoCamera, Add } from "@mui/icons-material"
 import { useRef, useState } from "react"
+import useStoreEdit from "./useStoreEdit"
 
 interface ImageUploadBoxProps {
   index: number
@@ -112,25 +114,93 @@ function ImageUploadBox({
 }
 
 export default function SecondInfoPage() {
-  const [image1, setImage1] = useState<string>("")
-  const [image2, setImage2] = useState<string>("")
-  const [image3, setImage3] = useState<string>("")
+  // 이미지 파일 저장
+  const [insideFiles, setInsideFiles] = useState<(File | null)[]>([
+    null,
+    null,
+    null,
+  ])
+  const [outsideFiles, setOutsideFiles] = useState<(File | null)[]>([
+    null,
+    null,
+    null,
+  ])
+  const [isUploading, setIsUploading] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
+  const [insideImages, setInsideImages] = useState<string[]>(["", "", ""])
+  const [outsideImages, setOutsideImages] = useState<string[]>(["", "", ""])
+  // useStoreEdit 훅 사용
+  const { setStoreImages } = useStoreEdit()
 
-  const handleImage1Select = (file: File) => {
+  const handleInsideImageSelect = (file: File, index: number) => {
     const imageUrl = URL.createObjectURL(file)
-    setImage1(imageUrl)
+    setInsideImages((prev) => {
+      const newArr = [...prev]
+      newArr[index] = imageUrl
+      return newArr
+    })
+    setInsideFiles((prev) => {
+      const newArr = [...prev]
+      newArr[index] = file
+      return newArr
+    })
+    // 내부/외부 파일 합쳐서 jotai atom에 저장
+    const nextInsideFiles = [
+      ...insideFiles.slice(0, index),
+      file,
+      ...insideFiles.slice(index + 1),
+    ]
+    const allFiles = [...nextInsideFiles, ...outsideFiles].filter(
+      (f): f is File => !!f
+    )
+    setStoreImages(allFiles)
   }
 
-  const handleImage2Select = (file: File) => {
+  const handleOutsideImageSelect = (file: File, index: number) => {
     const imageUrl = URL.createObjectURL(file)
-    setImage2(imageUrl)
+    setOutsideImages((prev) => {
+      const newArr = [...prev]
+      newArr[index] = imageUrl
+      return newArr
+    })
+    setOutsideFiles((prev) => {
+      const newArr = [...prev]
+      newArr[index] = file
+      return newArr
+    })
+    // 내부/외부 파일 합쳐서 jotai atom에 저장
+    const nextOutsideFiles = [
+      ...outsideFiles.slice(0, index),
+      file,
+      ...outsideFiles.slice(index + 1),
+    ]
+    const allFiles = [...insideFiles, ...nextOutsideFiles].filter(
+      (f): f is File => !!f
+    )
+    setStoreImages(allFiles)
+  }
+  // 이미지 업로드 함수를 export하여 마지막 페이지에서 호출
+  const uploadImages = async () => {
+    setIsUploading(true)
+    setUploadError(null)
+    try {
+      const formData = new FormData()
+      ;[...insideFiles, ...outsideFiles].forEach((file) => {
+        if (file) formData.append("images", file)
+      })
+      const res = await aiAxios.post("/v1/upload-store-images", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+      if (res.status !== 200) throw new Error("이미지 업로드 실패")
+      // 성공 처리 (예: 알림)
+    } catch (err) {
+    } finally {
+      setIsUploading(false)
+    }
   }
 
-  const handleImage3Select = (file: File) => {
-    const imageUrl = URL.createObjectURL(file)
-    setImage3(imageUrl)
-  }
-
+  // ...기존 코드...
+  // 업로드 버튼 제거, 다음 단계에서 uploadImages를 호출
   return (
     <Stack width="100%" height="100%" alignItems="center">
       <Typography
@@ -158,21 +228,14 @@ export default function SecondInfoPage() {
       </Typography>
 
       <Stack gap="16px" width="100%" maxWidth="400px" padding="12px">
-        <ImageUploadBox
-          index={1}
-          onImageSelect={(file) => handleImage1Select(file)}
-          selectedImage={image1}
-        />
-        <ImageUploadBox
-          index={2}
-          onImageSelect={(file) => handleImage2Select(file)}
-          selectedImage={image2}
-        />
-        <ImageUploadBox
-          index={3}
-          onImageSelect={(file) => handleImage3Select(file)}
-          selectedImage={image3}
-        />
+        {[0, 1, 2].map((idx) => (
+          <ImageUploadBox
+            key={idx}
+            index={idx}
+            onImageSelect={handleInsideImageSelect}
+            selectedImage={insideImages[idx]}
+          />
+        ))}
       </Stack>
 
       <Typography
@@ -188,21 +251,14 @@ export default function SecondInfoPage() {
       </Typography>
 
       <Stack gap="16px" width="100%" maxWidth="400px" padding="12px">
-        <ImageUploadBox
-          index={1}
-          onImageSelect={(file) => handleImage1Select(file)}
-          selectedImage={image1}
-        />
-        <ImageUploadBox
-          index={2}
-          onImageSelect={(file) => handleImage2Select(file)}
-          selectedImage={image2}
-        />
-        <ImageUploadBox
-          index={3}
-          onImageSelect={(file) => handleImage3Select(file)}
-          selectedImage={image3}
-        />
+        {[0, 1, 2].map((idx) => (
+          <ImageUploadBox
+            key={idx}
+            index={idx}
+            onImageSelect={handleOutsideImageSelect}
+            selectedImage={outsideImages[idx]}
+          />
+        ))}
       </Stack>
     </Stack>
   )

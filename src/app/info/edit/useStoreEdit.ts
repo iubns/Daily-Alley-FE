@@ -1,6 +1,6 @@
 import axios from "@/config/axios"
+import aiAxiosInstance from "@/config/aiAxiosInstance"
 import { atom, useAtom, useSetAtom } from "jotai"
-import { useEffect } from "react"
 
 const StoreInfoAtom = atom<StoreInfo>({
   name: "",
@@ -9,6 +9,19 @@ const StoreInfoAtom = atom<StoreInfo>({
   description: "",
 })
 
+// 컨텐츠 느낌 저장용 atom
+const ContentFeelAtom = atom<ContentFeel>({
+  storeId: 0,
+  picFeel: "",
+  postFeel: "",
+})
+
+export interface ContentFeel {
+  storeId: number
+  picFeel: string
+  postFeel: string
+}
+
 const StoreSnsInfoAtom = atom<StoreSNSInfo>({
   storeId: 0,
   snsId: "",
@@ -16,6 +29,7 @@ const StoreSnsInfoAtom = atom<StoreSNSInfo>({
   type: "NAVER",
 })
 
+const StoreImageAtom = atom<File[]>([])
 export interface StoreInfo {
   name: string
   type: string
@@ -38,7 +52,36 @@ interface StoreSNSInfo {
 export default function useStoreEdit() {
   const [storeInfo, setStoreInfo] = useAtom(StoreInfoAtom)
   const [storeSnsInfo, setStoreSnsInfo] = useAtom(StoreSnsInfoAtom)
+  const [contentFeel, setContentFeel] = useAtom(ContentFeelAtom)
   const setStoreId = useSetAtom(atom<number | null>(null))
+  const [storeImages, setStoreImages] = useAtom(StoreImageAtom)
+
+  // 이미지 업로드 함수
+  async function uploadStoreImages() {
+    if (!storeImages || storeImages.length === 0) return null
+    const storeId = localStorage.getItem("storeId")
+    const formData = new FormData()
+    storeImages.forEach((file) => {
+      formData.append("images", file)
+    })
+    formData.append("storeId", storeId || "")
+    const { status, data } = await aiAxiosInstance.post(
+      "/v1/upload-store-images",
+      formData,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      }
+    )
+    return { status, data }
+  }
+
+  async function saveContentFeel() {
+    const { status } = await axios.post("/contents", {
+      ...contentFeel,
+      storeId: Number(localStorage.getItem("storeId")),
+    })
+    return status
+  }
 
   async function registrationStoreInfo() {
     const { data, status } = await axios.post<RegistrationResponse>(
@@ -48,8 +91,10 @@ export default function useStoreEdit() {
 
     if (status === 200) {
       localStorage.setItem("storeId", String(data.storeId))
+      console.log("이거 맞잖아?", data.storeId)
       setStoreId(data.storeId)
       setStoreSnsInfo((prev) => ({ ...prev, storeId: data.storeId }))
+      setContentFeel((prev) => ({ ...prev, storeId: data.storeId }))
     }
 
     return {
@@ -58,7 +103,7 @@ export default function useStoreEdit() {
   }
 
   async function saveStoreSnsInfo() {
-    const { status } = await axios.post("/store/sns", storeSnsInfo)
+    const { status } = await axios.post("/sns", storeSnsInfo)
     return status
   }
 
@@ -69,5 +114,11 @@ export default function useStoreEdit() {
     setStoreInfo,
     setStoreSnsInfo,
     storeSnsInfo,
+    contentFeel,
+    setContentFeel,
+    saveContentFeel,
+    storeImages,
+    setStoreImages,
+    uploadStoreImages,
   }
 }

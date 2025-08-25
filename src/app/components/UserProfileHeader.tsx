@@ -16,7 +16,7 @@ function UserProfileHeader() {
 
   useEffect(() => {
     fetchStoreInfo()
-  }, [fetchStoreInfo])
+  }, [])
 
   return (
     <Box
