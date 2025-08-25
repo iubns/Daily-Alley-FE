@@ -77,13 +77,14 @@ function CreateContentPage() {
       formData.append('user_prompt', info);
 
       console.log("이미지 가공 요청");
-      await aiAxiosInstance.post('/v1/outpaint', formData, {
+      const {data} = await aiAxiosInstance.post('/v1/outpaint', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
+        responseType: 'blob',
       });
       console.log("이미지 가공 요청 완료");
-
+      const imageUrl = URL.createObjectURL(data);
       const promoParams = new URLSearchParams();
 
       const originalFilename = selectedFile.name;
@@ -95,17 +96,39 @@ function CreateContentPage() {
       promoParams.append('mood', mood);
 
       const promoResponse = await aiAxiosInstance.post('/v1/generate-promo', promoParams);
+      console.log("AI 텍스트 생성 API 실제 응답:", promoResponse.data);
+
       const aiResult = promoResponse.data;
       console.log("텍스트 생성 완료");
 
+      if (aiResult && aiResult.variants && aiResult.variants.length > 0) {
+      const firstVariant = aiResult.variants[0]; // 첫 번째 결과물 선택
+
+      const body = firstVariant.body.split(/(https?:\/\/[^\s]+)/g).filter(Boolean) as string[];
       setCreationResult({
-        imageUrl: `https://your-image-server-base-url.com/${identifier}_food_AI.jpg`, 
-        text: aiResult.body, 
-        hashtags: aiResult.tags,
+        imageUrl: imageUrl,
+        headline: firstVariant.headline, 
+        body: body,         
+        cta: firstVariant.cta,           
+        hashtags: firstVariant.tags || [], 
         mood: mood, 
       });
 
       router.push('/create/result');
+    } else {
+      throw new Error("AI가 텍스트를 생성하지 못했습니다.");
+    }
+
+      /*
+      setCreationResult({
+        imageUrl,
+        text: aiResult.body, 
+        hashtags: aiResult.tags, 
+        mood: mood, 
+      });
+
+      router.push('/create/result');
+      */
 
     } catch (error) {
       console.error("콘텐츠 제작에 실패했습니다:", error);

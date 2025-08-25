@@ -7,7 +7,7 @@ const aiAxiosInstance = axios.create({
   headers: {
   },
   // 응답 대시 시간 (30초)
-  timeout: 60000, 
+  timeout: 120000, 
 });
 
 export default aiAxiosInstance;
