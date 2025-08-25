@@ -80,7 +80,7 @@ export default function useStoreEdit() {
   }
 
   async function saveStoreSnsInfo() {
-    const { status } = await axios.post("/store/sns", storeSnsInfo)
+    const { status } = await axios.post("/sns", storeSnsInfo)
     return status
   }
 

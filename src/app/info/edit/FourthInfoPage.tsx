@@ -4,7 +4,7 @@ import { Stack, Typography } from "@mui/material"
 import { useState } from "react"
 import useStoreEdit from "./useStoreEdit"
 
-export default function FourthInfoPage(max: number) {
+export default function FourthInfoPage() {
   const aiPromotionStyles = [
     {
       label: "친근하고 따뜻한 스타일",
