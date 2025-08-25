@@ -22,6 +22,7 @@ import { creationResultAtom } from "./atom/creationAtom"
 import { useRouter } from "next/navigation"
 import axiosInstance from "@/config/axios" // 백엔드 서버용
 import aiAxiosInstance from "@/config/aiAxiosInstance" // AI 서버용
+import { StoreInfo } from "../info/edit/useStoreEdit"
 
 const aiImageStyles = [
   {
@@ -82,19 +83,11 @@ function CreateContentPage() {
   const [currentUserTag, setCurrentUserTag] = useState("") // 유저태그 현재 입력값 저장
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [storeInfo, setStoreInfo] = useState<StoreInfo | null>(null) // 가게 정보
 
   useEffect(() => {
     fetchContentFeel()
   }, [])
-  // 해시태그 기능 구현
-  // 'Enter' 키로 해시태그를 추가
-  const handleHashtagKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === "Enter" && currentHashtag.trim() !== "") {
-      event.preventDefault()
-      setHashtags([...hashtags, `#${currentHashtag.trim()}`])
-      setCurrentHashtag("")
-    }
-  }
 
   async function fetchContentFeel() {
     const storeId = localStorage.getItem("storeId")
@@ -107,7 +100,25 @@ function CreateContentPage() {
     setMood(data.picFeel || "모던 & 시크")
     setFeel(data.postFeel || "친근하고 따뜻한 스타일")
 
+    axiosInstance
+      .get<{ url: StoreInfo }>(`/store?storeId=${storeId}`)
+      .then(({ data, status }) => {
+        if (status === 200) {
+          setStoreInfo(data.url)
+        }
+      })
+
     return status
+  }
+
+  // 해시태그 기능 구현
+  // 'Enter' 키로 해시태그를 추가
+  const handleHashtagKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter" && currentHashtag.trim() !== "") {
+      event.preventDefault()
+      setHashtags([...hashtags, `#${currentHashtag.trim()}`])
+      setCurrentHashtag("")
+    }
   }
 
   // x 버튼으로 해시태그를 삭제
@@ -135,7 +146,7 @@ function CreateContentPage() {
     }
   }
 
-  // 결과물 실행
+  // [수정됨] 결과물 실행 함수
   const handleCreate = async () => {
     if (!selectedFile) {
       alert("이미지를 먼저 선택해주세요!")
@@ -148,7 +159,7 @@ function CreateContentPage() {
       const formData = new FormData()
 
       formData.append("input_image", selectedFile)
-      formData.append("user_prompt", info)
+      formData.append("user_prompt", mood)
 
       console.log("이미지 가공 요청")
       const { data } = await aiAxiosInstance.post("/v1/outpaint", formData, {
@@ -161,16 +172,13 @@ function CreateContentPage() {
       const imageUrl = URL.createObjectURL(data)
       const promoParams = new URLSearchParams()
 
-      const originalFilename = selectedFile.name
-      const filenameWithoutExt = originalFilename.substring(
-        0,
-        originalFilename.lastIndexOf(".")
+      promoParams.append("store_name", storeInfo?.name || "") // *실제 가게 이름으로 변경 필요
+      promoParams.append(
+        "mood",
+        feel + " 그리고 아래 정보들을 추가해줘 " + info
       )
-      const identifier = `19_${filenameWithoutExt}`
-
-      promoParams.append("identifier", identifier)
-      promoParams.append("store_name", "Daily Alley 카페") // *실제 가게 이름으로 변경 필요
-      promoParams.append("mood", mood)
+      promoParams.append("store_description", storeInfo?.description || "")
+      promoParams.append("location_text", storeInfo?.location || "")
 
       const promoResponse = await aiAxiosInstance.post(
         "/v1/generate-promo",
@@ -179,38 +187,38 @@ function CreateContentPage() {
       console.log("AI 텍스트 생성 API 실제 응답:", promoResponse.data)
 
       const aiResult = promoResponse.data
-      console.log("텍스트 생성 완료")
 
       if (aiResult && aiResult.variants && aiResult.variants.length > 0) {
-        const firstVariant = aiResult.variants[0] // 첫 번째 결과물 선택
+        const processedVariants = aiResult.variants.map(
+          (variant: {
+            headline: string
+            body: string
+            cta: string
+            tags?: string[]
+          }) => {
+            return {
+              headline: variant.headline,
+              body: variant.body
+                .split(/(https?:\/\/[^\s]+)/g)
+                .filter(Boolean) as string[],
+              cta: variant.cta,
+              hashtags: variant.tags || [],
+              originalBody: variant.body, // 원본 본문 추가
+            }
+          }
+        )
 
-        const body = firstVariant.body
-          .split(/(https?:\/\/[^\s]+)/g)
-          .filter(Boolean) as string[]
+        // 가공된 결과물 배열 전체를 atom에 저장합니다.
         setCreationResult({
           imageUrl: imageUrl,
-          headline: firstVariant.headline,
-          body: body,
-          cta: firstVariant.cta,
-          hashtags: firstVariant.tags || [],
           mood: mood,
+          variants: processedVariants,
         })
 
         router.push("/create/result")
       } else {
         throw new Error("AI가 텍스트를 생성하지 못했습니다.")
       }
-
-      /*
-      setCreationResult({
-        imageUrl,
-        text: aiResult.body, 
-        hashtags: aiResult.tags, 
-        mood: mood, 
-      });
-
-      router.push('/create/result');
-      */
     } catch (error) {
       console.error("콘텐츠 제작에 실패했습니다:", error)
       alert("콘텐츠 제작 중 오류가 발생했습니다. 다시 시도해주세요.")
@@ -290,7 +298,7 @@ function CreateContentPage() {
                 게시글의 느낌
               </Typography>
               <FormControl fullWidth>
-                <Select value={feel} onChange={(e) => setMood(e.target.value)}>
+                <Select value={feel} onChange={(e) => setFeel(e.target.value)}>
                   {aiPromotionStyles.map((style, index) => (
                     <MenuItem key={index} value={style.label}>
                       {style.label}

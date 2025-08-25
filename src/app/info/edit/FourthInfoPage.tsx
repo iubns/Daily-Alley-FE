@@ -120,7 +120,7 @@ export default function FourthInfoPage() {
         >
           사진 스타일 및 프롬프트
         </Typography>
-        <Stack gap="16px" direction="row">
+        <Stack gap="16px" direction="row" overflow="scroll" width="100vw">
           {aiImageStyles.map((style, styleIdx) => (
             <Stack key={styleIdx}>
               <Typography variant="subtitle2" color="primary" sx={{ mb: 1 }}>
